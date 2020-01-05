@@ -1,14 +1,23 @@
-'use strict';
-
 const express = require('express');
-let mysql = require('mysql');
-
-const PORT = 80;
-const HOST = '0.0.0.0';
-
+const mysql = require('mysql');
 const app = express();
-app.get('/', (req,res) => {
 
+const db = mysql.createConnection ({
+  user: 'root',
+  password: 'WCKF1TY56',
+  database: 'pages',
+  socketPath: '/cloudsql/cloudcomputing3032:us-central1:codelab-0'
+});
+
+db.connect((err) => {
+  if (err) {
+    throw err;
+  }
+  console.log('Connected to database');
+});
+global.db = db;
+
+app.get('/', (req, res) => {
   var output = {
     'error': false,
     'answer': 0
@@ -17,30 +26,23 @@ app.get('/', (req,res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  try {
-    var searchText = req.query.search;
+  var searchText = req.query.search;
 
-    let connection = mysql.createConnection({
-      host: 'localhost',
-      user: 'root',
-      password: '',
-      database: 'todoapp'
-    });
-
-    let sql = `SELECT * FROM pages`;
-    connection.query(sql, (error, results, fields) => {
-      if (error) {
-        output.error = error.message;
-      }
-      output.answer = results;
-    });
-
-    connection.end();
+  let query = "SELECT uri FROM page WHERE content LIKE ?";
+  db.query(query, ['%' + searchText + '%'], (err, result) => {
+    if (err) {
+      output.error = err;
+    }
+    var uris =[];
+    for (var i = 0; i < result.length; i++) {
+      uris.push(result[i].uri)
+    }
+    output.answer = uris;
     res.end(JSON.stringify(output));
-  } catch(e) {
-    output.error = e;
-    res.end(JSON.stringify(output));
-  }
+  });
 });
 
-app.listen(PORT, HOST);
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log('Listening on port', port);
+});
