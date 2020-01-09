@@ -1,38 +1,51 @@
-name: Deploy to Google Cloud Run
-on:
-  push:
-    branches:
-      - 'master'
+# name: Deploy to Google Cloud Run
+# on:
+#   push:
+#     branches:
+#       - 'master'
 
-jobs:
-  deploy:
-    name: Deploy job
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v1
+# jobs:
+#   deploy:
+#     name: Deploy job
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout the repository
+#         uses: actions/checkout@v1
 
-      - name: Build Docker image
-        run: |
-          docker build . --tag eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}
+#       - name: Build Docker image
+#         run: |
+#           docker build . --tag eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}
           
-      - name: Authenticate into Google Cloud Platform
-        uses: actions/gcloud/auth@master
-        env:
-          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+#       - name: Authenticate into Google Cloud Platform
+#         uses: actions/gcloud/auth@master
+#         env:
+#           GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
 
-      - name: Configure Docker to use Google Cloud Platform
-        uses: actions/gcloud/cli@master
-        with:
-          args: "auth configure-docker --quiet"
+#       - name: Configure Docker to use Google Cloud Platform
+#         uses: actions/gcloud/cli@master
+#         with:
+#           args: "auth configure-docker --quiet"
 
-      - name: Push image to Google Cloud Container Registry
-        uses: actions/gcloud/cli@master
-        with:
-          entrypoint: sh
-          args: -c "docker push eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}"
+#       - name: Push image to Google Cloud Container Registry
+#         uses: actions/gcloud/cli@master
+#         with:
+#           entrypoint: sh
+#           args: -c "docker push eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}"
 
-      - name: Install beta commands and deploy on cloud run
-        uses: actions/gcloud/cli@master
-        with:
-          args: "components install beta --quiet && gcloud beta run deploy ${{ secrets.GCLOUD_APP_NAME }} --quiet --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }} --project ${{ secrets.GCLOUD_PROJECT }} --region europe-west1 --platform managed"
+#       - name: Install beta commands and deploy on cloud run
+#         uses: actions/gcloud/cli@master
+#         with:
+#           args: "components install beta --quiet && gcloud beta run deploy ${{ secrets.GCLOUD_APP_NAME }} --quiet --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }} --project ${{ secrets.GCLOUD_PROJECT }} --region europe-west1 --platform managed"
+
+steps:
+# Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+args: ['build', '-t', 'gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}', '.']
+# Push the image to Container Registry
+- name: 'gcr.io/cloud-builders/docker'
+args: ['push', 'gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}']
+# Deploy image to Cloud Run
+- name: 'gcr.io/cloud-builders/gcloud'
+ args: ['run', 'deploy', '${{ secrets.GCLOUD_APP_NAME }}', '--image', 'gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}', '--region', 'us-central1', '--platform', 'managed', '--allow-unauthenticated']
+images:
+- gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}
