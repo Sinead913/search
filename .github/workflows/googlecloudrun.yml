@@ -40,12 +40,18 @@ jobs:
     steps:
 # Build the container image
       - name: 'gcr.io/cloud-builders/docker'
-        args: ['build', '-t', 'gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}', '.']
+        run: |
+          docker build . --tag eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}
+#         args: ['build', '-t', 'gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}', '.']
 # Push the image to Container Registry
       - name: 'gcr.io/cloud-builders/docker'
-        args: ['push', 'gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}']
+        run: |
+          docker push eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}
+#         args: ['push', 'gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}']
 # Deploy image to Cloud Run
       - name: 'gcr.io/cloud-builders/gcloud'
-        args: ['run', 'deploy', '${{ secrets.GCLOUD_APP_NAME }}', '--image', 'gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}', '--region', 'us-central1', '--platform', 'managed', '--allow-unauthenticated']
-    images:
-      - gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}
+        run: |
+          run deploy ${{ secrets.GCLOUD_APP_NAME }} --quiet --image eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }} --project ${{ secrets.GCLOUD_PROJECT }} --region us-central1 --platform managed --allow-unauthenticated
+#             args: ['run', 'deploy', '${{ secrets.GCLOUD_APP_NAME }}', '--image', 'gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}', '--region', 'us-central1', '--platform', 'managed', '--allow-unauthenticated']
+#       images:
+#       - gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}
