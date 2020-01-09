@@ -19,7 +19,7 @@ global.db = db;
 
 app.get('/', (req, res) => {
   var output = {
-    'error7': false,
+    'error2': false,
     'answer': 0
   };
 
@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
   let query = "SELECT uri FROM page WHERE content LIKE ?";
   db.query(query, ['%' + searchText + '%'], (err, result) => {
     if (err) {
-      output.error7 = err;
+      output.error2 = err;
     }
     var uris =[];
     for (var i = 0; i < result.length; i++) {
