@@ -41,7 +41,8 @@ jobs:
 # Build the container image
       - name: Build Docker image
         run: |
-          docker build . --tag eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}
+          docker build -t gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }} ../..
+#          docker build . --tag eu.gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }}
 #       - name: 'gcr.io/cloud-builders/docker'
 #         run: |
 #           docker build -t gcr.io/${{ secrets.GCLOUD_PROJECT }}/${{ secrets.GCLOUD_APP_NAME }} .
