@@ -7,15 +7,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: npm install
-        uses: actions/npm@v1
-        with:
-          args: install
-      - name: npm test
-        uses: actions/npm@v1
-        with:
-          args: run test_api.js
-      - name: npm lint
-        uses: actions/npm@v1
-        with:
-          args: run lint
-          
+        uses: actions/setup-node@v1
+      - run: npm install
+      - run: npm test test_api.js
+    
