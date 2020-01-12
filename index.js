@@ -5,7 +5,7 @@ const app = express();
 
 const db = mysql.createConnection ({
   user: 'root',
-  password: ${{ secrets.GCLOUD_PASSWORD }},
+  password: 'WCKF1TY56,
   database: 'pages',
   socketPath: '/cloudsql/cloudcomputing3032:us-central1:codelab-0'
 });
@@ -24,6 +24,7 @@ app.get('/', (req, res) => {
     'answer': 0
   };
 
+try {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
 
@@ -40,6 +41,12 @@ app.get('/', (req, res) => {
     }
     output.answer = uris;
     res.end(JSON.stringify(output));
+  } catch(e) {
+    output.error = e.message;
+    output.answer = 0;
+
+    res.end(JSON.stringify(output));
+  }
   });
 });
 
