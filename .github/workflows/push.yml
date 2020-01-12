@@ -13,7 +13,7 @@ jobs:
       - name: npm test
         uses: actions/npm@master
         with:
-          args: run test
+          args: run test_api.js
       - name: npm lint
         uses: actions/npm@master
         with:
