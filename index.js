@@ -5,7 +5,7 @@ const app = express();
 
 const db = mysql.createConnection ({
   user: 'root',
-  password: 'WCKF1TY56,
+  password: 'WCKF1TY56',
   database: 'pages',
   socketPath: '/cloudsql/cloudcomputing3032:us-central1:codelab-0'
 });
