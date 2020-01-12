@@ -1,0 +1,21 @@
+on: push
+name: run tests
+jobs:
+  test-and-lint:
+    name: testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: npm install
+        uses: actions/npm@master
+        with:
+          args: install
+      - name: npm test
+        uses: actions/npm@master
+        with:
+          args: run test
+      - name: npm lint
+        uses: actions/npm@master
+        with:
+          args: run lint
+          
