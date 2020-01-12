@@ -41,13 +41,13 @@ try {
     }
     output.answer = uris;
     res.end(JSON.stringify(output));
+    });
   } catch(e) {
     output.error = e.message;
     output.answer = 0;
 
     res.end(JSON.stringify(output));
   }
-  });
 });
 
 const port = process.env.PORT || 8080;
